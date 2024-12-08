@@ -28,7 +28,7 @@ func main() {
         }
     }
 
-    let correctUpdates = updates.filter { update in
+    var correctUpdates = updates.filter { update in
         for i in 0..<update.count {
             let number = update[i]
             let applicableRules = rules.filter { $0.0 == number }
@@ -46,11 +46,29 @@ func main() {
         return true
     }
     
+    print(calcMids(correctUpdates: correctUpdates))
+    
+    let incorrectUpdates = Array(Set(updates).subtracting(correctUpdates))
+    
+    var correctedUpdates = [[Int]]()
+    for update in incorrectUpdates {
+        var correctedUpdate = update
+        correctedUpdate.sort { num1, num2 in
+            let applicableRules = rules.filter { $0.1 == num1 && $0.0 == num2 }
+            return applicableRules.isEmpty
+        }
+        correctedUpdates.append(correctedUpdate)
+    }
+
+    print(calcMids(correctUpdates: correctedUpdates))
+}
+
+func calcMids(correctUpdates: [[Int]]) -> Int {
     let mids = correctUpdates.reduce(into: []) { partialResult, update in
         partialResult.append(update[(update.count-1)/2])
     }
     
-    print(mids.reduce(0, +))
+    return mids.reduce(0, +)
 }
 
 func parseRule(from line: String) -> (Int, Int) {
